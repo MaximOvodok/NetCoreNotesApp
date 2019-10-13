@@ -1,0 +1,9 @@
+D:\Work\NetCoreNotesApp\NetCoreNotesApp.DAL\bin\Debug\netstandard2.0\NetCoreNotesApp.DAL.deps.json
+D:\Work\NetCoreNotesApp\NetCoreNotesApp.DAL\bin\Debug\netstandard2.0\NetCoreNotesApp.DAL.dll
+D:\Work\NetCoreNotesApp\NetCoreNotesApp.DAL\bin\Debug\netstandard2.0\NetCoreNotesApp.DAL.pdb
+D:\Work\NetCoreNotesApp\NetCoreNotesApp.DAL\obj\Debug\netstandard2.0\NetCoreNotesApp.DAL.csprojAssemblyReference.cache
+D:\Work\NetCoreNotesApp\NetCoreNotesApp.DAL\obj\Debug\netstandard2.0\NetCoreNotesApp.DAL.csproj.CoreCompileInputs.cache
+D:\Work\NetCoreNotesApp\NetCoreNotesApp.DAL\obj\Debug\netstandard2.0\NetCoreNotesApp.DAL.AssemblyInfoInputs.cache
+D:\Work\NetCoreNotesApp\NetCoreNotesApp.DAL\obj\Debug\netstandard2.0\NetCoreNotesApp.DAL.AssemblyInfo.cs
+D:\Work\NetCoreNotesApp\NetCoreNotesApp.DAL\obj\Debug\netstandard2.0\NetCoreNotesApp.DAL.dll
+D:\Work\NetCoreNotesApp\NetCoreNotesApp.DAL\obj\Debug\netstandard2.0\NetCoreNotesApp.DAL.pdb
