@@ -1,41 +1,49 @@
 using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+using NetCoreNotesApp.BLL.BusinessEntities;
+using NetCoreNotesApp.BLL.Core;
+using NetCoreNotesApp.DAL.Entities;
+using NetCoreNotesApp.DAL.Interfaces;
 
-public class NoteService: INoteService
+namespace NetCoreNotesApp.BLL.Services
 {
-    private readonly INoteRepository _noteRepository;
-    public NoteService(INoteRepository noteRepository)
+    public class NoteService : INoteService
     {
-        _noteRepository = noteRepository;
-    }
-
-    public void EnsureNote(NoteDTO note)
-    {
-        Mapper.Initialize(cfg =>
+        private readonly INoteRepository _noteRepository;
+        private readonly ISeverityRepository _severityRepository;
+        private readonly IMapper _mapper;
+        public NoteService(INoteRepository noteRepository, ISeverityRepository severityRepository, IMapper mapper)
         {
-            cfg.CreateMap<NoteDTO, Note>();
-        });
-
-        var noteEntity = Mapper.Map<NoteDTO, Note>(note);
-        if (noteEntity.Id > 0)
-        {
-            _noteRepository.Update(noteEntity);
+            _noteRepository = noteRepository;
+            _severityRepository = severityRepository;
+            _mapper = mapper;
         }
-        else 
+
+        public void EnsureNote(NoteDTO note)
         {
-            _noteRepository.Create(noteEntity);
+            var noteEntity = _mapper.Map<NoteDTO, Note>(note);
+            if (noteEntity.Id > 0)
+            {
+                _noteRepository.Update(noteEntity);
+            }
+            else
+            {
+                _noteRepository.Create(noteEntity);
+            }
         }
-    }
 
-    public IList<NoteDTO> GetNotes()
-    {
-        Mapper.Initialize(cfg => {
-            cfg.CreateMap<Note, NoteDTO>();
-            cfg.CreateMap<Tag, TagDTO>();
-        });
+        public IList<NoteDTO> GetNotes()
+        {
+            var noteEntities = _noteRepository.GetAll().Include(n => n.Severity).Include(n=>n.Tags).ToList();
+            return _mapper.Map<IList<Note>, IList<NoteDTO>>(noteEntities);
+        }
 
-        var noteEntities = _noteRepository.GetAll().ToList();
-        return Mapper.Map<IList<Note>, IList<NoteDTO>>(noteEntities);
+        public IList<SeverityDTO> GetSeverities()
+        {
+            var severityEntities = _severityRepository.GetAll().ToList();
+            return _mapper.Map<IList<Severity>, IList<SeverityDTO>>(severityEntities);
+        }
     }
 }

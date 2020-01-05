@@ -1,7 +1,12 @@
+using NetCoreNotesApp.BLL.BusinessEntities;
 using System.Collections.Generic;
 
-public interface INoteService
+namespace NetCoreNotesApp.BLL.Core
 {
-    IList<NoteDTO> GetNotes();
-    void EnsureNote(NoteDTO note);
+    public interface INoteService
+    {
+        IList<NoteDTO> GetNotes();
+        IList<SeverityDTO> GetSeverities();
+        void EnsureNote(NoteDTO note);
+    }
 }

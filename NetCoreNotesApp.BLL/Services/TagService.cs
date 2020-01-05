@@ -1,27 +1,32 @@
 using AutoMapper;
+using NetCoreNotesApp.BLL.BusinessEntities;
+using NetCoreNotesApp.BLL.Core;
+using NetCoreNotesApp.DAL.Entities;
+using NetCoreNotesApp.DAL.Interfaces;
 
-public class TagService : ITagService
+namespace NetCoreNotesApp.BLL.Services
 {
-    private readonly ITagRepository _tagRepository;
-    public TagService(ITagRepository tagRepository)
+    public class TagService : ITagService
     {
-        _tagRepository = tagRepository;
-    }
-    public void EnsureTag(TagDTO tag)
-    {
-        Mapper.Initialize(cfg =>
+        private readonly ITagRepository _tagRepository;
+        private readonly IMapper _mapper;
+        public TagService(ITagRepository tagRepository, IMapper mapper)
         {
-            cfg.CreateMap<TagDTO, Tag>();
-        });
-        var tagEntity = Mapper.Map<TagDTO, Tag>(tag);
-
-        if (tagEntity.Id > 0)
-        {
-            _tagRepository.Update(tagEntity);
+            _tagRepository = tagRepository;
+            _mapper = mapper;
         }
-        else
+        public void EnsureTag(TagDTO tag)
         {
-            _tagRepository.Create(tagEntity);
+            var tagEntity = _mapper.Map<TagDTO, Tag>(tag);
+
+            if (tagEntity.Id > 0)
+            {
+                _tagRepository.Update(tagEntity);
+            }
+            else
+            {
+                _tagRepository.Create(tagEntity);
+            }
         }
     }
 }

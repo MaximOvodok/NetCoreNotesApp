@@ -1,8 +1,13 @@
 using Microsoft.EntityFrameworkCore;
+using NetCoreNotesApp.DAL.Entities;
+using NetCoreNotesApp.DAL.Interfaces;
 
-public class NoteRepository : BaseRepository<Note>, INoteRepository
+namespace NetCoreNotesApp.DAL.Repositories
 {
-    public NoteRepository(DbContext dbContext) : base(dbContext)
+    public class NoteRepository : BaseRepository<Note>, INoteRepository
     {
+        public NoteRepository(DbContext dbContext) : base(dbContext)
+        {
+        }
     }
 }

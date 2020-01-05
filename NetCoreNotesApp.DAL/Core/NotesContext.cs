@@ -1,12 +1,16 @@
 using Microsoft.EntityFrameworkCore;
+using NetCoreNotesApp.DAL.Entities;
 
-public class NotesContext: DbContext
+namespace NetCoreNotesApp.DAL.Core
 {
-    public NotesContext(DbContextOptions<NotesContext> options): base(options)
+    public class NotesContext : DbContext
     {
-        Database.EnsureCreated();
-    }
+        public NotesContext(DbContextOptions<NotesContext> options) : base(options)
+        {
+        }
 
-    public DbSet<Note> Notes { get; set; }
-    public DbSet<Tag> Tags { get; set; }
+        public DbSet<Note> Notes { get; set; }
+        public DbSet<Tag> Tags { get; set; }
+        public DbSet<Severity> Severities { get; set; }
+    }
 }

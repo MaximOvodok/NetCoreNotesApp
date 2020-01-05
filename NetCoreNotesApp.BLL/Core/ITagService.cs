@@ -1,4 +1,9 @@
-public interface ITagService
+using NetCoreNotesApp.BLL.BusinessEntities;
+
+namespace NetCoreNotesApp.BLL.Core
 {
-    void EnsureTag(TagDTO tag);
+    public interface ITagService
+    {
+        void EnsureTag(TagDTO tag);
+    }
 }

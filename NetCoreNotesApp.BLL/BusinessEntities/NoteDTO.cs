@@ -1,9 +1,13 @@
 using System.Collections.Generic;
 
-public class NoteDTO
+namespace NetCoreNotesApp.BLL.BusinessEntities
 {
-    public int Id { get; set; }
-    public string Text { get; set; }
-    public string UserId { get; set; }
-    public ICollection<TagDTO> Tags { get; set; }
+    public class NoteDTO
+    {
+        public int Id { get; set; }
+        public string Text { get; set; }
+        public string UserId { get; set; }
+        public SeverityDTO Severity { get; set; }
+        public ICollection<TagDTO> Tags { get; set; }
+    }
 }

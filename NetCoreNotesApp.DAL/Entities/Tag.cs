@@ -1,5 +1,9 @@
-public class Tag: BaseEntity
+namespace NetCoreNotesApp.DAL.Entities
 {
-    public string Name { get; set; }
-    public Note Note { get; set; }
+    public class Tag : BaseEntity
+    {
+        public string Name { get; set; }
+        public int NoteId { get; set; }
+        public Note Note { get; set; }
+    }
 }
