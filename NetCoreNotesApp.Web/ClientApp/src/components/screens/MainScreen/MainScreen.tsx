@@ -10,7 +10,7 @@ class MainScreen extends React.Component {
   state = { notes: [], loading: true };
 
   componentDidMount() {
-     NoteService.GetNotes().then(notes => {
+     NoteService.getNotes().then(notes => {
       this.setState({ notes, loading: false });
     });
   }

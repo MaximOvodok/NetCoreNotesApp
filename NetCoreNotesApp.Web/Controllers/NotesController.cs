@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using NetCoreNotesApp.BLL.BusinessEntities;
 using NetCoreNotesApp.BLL.Core;
 using NetCoreNotesApp.Web.Models;
+using Newtonsoft.Json;
 
 namespace NetCoreNotesApp.Web.Controllers
 {
@@ -19,17 +20,24 @@ namespace NetCoreNotesApp.Web.Controllers
         {
             _noteService = noteService;
         }
-        [Microsoft.AspNetCore.Mvc.HttpGet("Get")]
+        [HttpGet("Get")]
         public IList<NoteDTO> Get()
         {
             var notes = _noteService.GetNotes();
             return notes;
         }
-        [Microsoft.AspNetCore.Mvc.HttpGet("Severities")]
+        [HttpGet("Severities")]
         public IList<SeverityDTO> GetSeverities()
         {
             var severities = _noteService.GetSeverities();
             return severities;
         }
+
+        [HttpPost("Create")]
+        public void Create([FromBody] NoteDTO noteDTO)
+        {
+            noteDTO.UserId = 1;
+            _noteService.EnsureNote(noteDTO);
+        } 
     }
 }

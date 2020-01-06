@@ -2,7 +2,26 @@ import INote from "../entities/INote";
 import ISeverity from "../entities/ISeverity";
 
 class NoteService {
-  public static GetSeverities(): Promise<Array<ISeverity>> {
+    public static createNote(note: INote): Promise<void> {
+        return new Promise((resolve, reject) => {
+            fetch(window.location.origin + "/api/Notes/Create", {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    SeverityId: note.severityId,
+                    Text: note.text
+                })
+            }).then(() => {
+                resolve();
+            }).catch((error: any) => {
+                reject(error);
+            });
+        });
+    }
+
+  public static getSeverities(): Promise<Array<ISeverity>> {
     return new Promise((resolve, reject) => {
       fetch(window.location.origin + "/api/Notes/Severities", {
         headers: {
@@ -20,7 +39,7 @@ class NoteService {
     });
   }
 
-  public static GetNotes(): Promise<Array<INote>> {
+  public static getNotes(): Promise<Array<INote>> {
     return new Promise<Array<INote>>((resolve, reject) => {
       fetch(window.location.origin + "/api/Notes/Get", {
         headers: {

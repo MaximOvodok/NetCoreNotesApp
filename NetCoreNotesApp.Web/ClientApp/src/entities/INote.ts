@@ -1,9 +1,11 @@
 import ITag from "./ITag";
+import ISeverity from "./ISeverity";
 
 interface INote {
-  text: string;
-  severity: string;
-  tags: Array<ITag>;
+    text: string;
+    severityId: number;
+    severity?: ISeverity;
+    tags: Array<ITag>;
 }
 
 export default INote;

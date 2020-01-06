@@ -4,20 +4,18 @@ using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using NetCoreNotesApp.BLL.BusinessEntities;
 using NetCoreNotesApp.BLL.Core;
+using NetCoreNotesApp.DAL.Core;
 using NetCoreNotesApp.DAL.Entities;
-using NetCoreNotesApp.DAL.Interfaces;
 
 namespace NetCoreNotesApp.BLL.Services
 {
     public class NoteService : INoteService
     {
-        private readonly INoteRepository _noteRepository;
-        private readonly ISeverityRepository _severityRepository;
+        private readonly IRepositoryContext _context;
         private readonly IMapper _mapper;
-        public NoteService(INoteRepository noteRepository, ISeverityRepository severityRepository, IMapper mapper)
+        public NoteService(IRepositoryContext context, IMapper mapper)
         {
-            _noteRepository = noteRepository;
-            _severityRepository = severityRepository;
+            _context = context;
             _mapper = mapper;
         }
 
@@ -26,23 +24,25 @@ namespace NetCoreNotesApp.BLL.Services
             var noteEntity = _mapper.Map<NoteDTO, Note>(note);
             if (noteEntity.Id > 0)
             {
-                _noteRepository.Update(noteEntity);
+                _context.Notes.Update(noteEntity);
             }
             else
             {
-                _noteRepository.Create(noteEntity);
+                _context.Notes.Create(noteEntity);
             }
+
+            _context.Commit();
         }
 
         public IList<NoteDTO> GetNotes()
         {
-            var noteEntities = _noteRepository.GetAll().Include(n => n.Severity).Include(n=>n.Tags).ToList();
+            var noteEntities = _context.Notes.GetAll().Include(n => n.Severity).Include(n => n.Tags).ToList();
             return _mapper.Map<IList<Note>, IList<NoteDTO>>(noteEntities);
         }
 
         public IList<SeverityDTO> GetSeverities()
         {
-            var severityEntities = _severityRepository.GetAll().ToList();
+            var severityEntities = _context.Severities.GetAll().ToList();
             return _mapper.Map<IList<Severity>, IList<SeverityDTO>>(severityEntities);
         }
     }

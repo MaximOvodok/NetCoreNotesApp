@@ -12,12 +12,7 @@ namespace NetCoreNotesApp.DAL.Repositories
         public DbSet<T> DbSet { get; set; }
         protected BaseRepository(DbContext dbContext)
         {
-            if (dbContext == null)
-            {
-                throw new ArgumentException("dbContext");
-            }
-
-            DbContext = dbContext;
+            DbContext = dbContext ?? throw new ArgumentException("dbContext");
             DbSet = DbContext.Set<T>();
         }
         public void Create(T entity)

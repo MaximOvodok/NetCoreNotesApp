@@ -1,6 +1,7 @@
 using AutoMapper;
 using NetCoreNotesApp.BLL.BusinessEntities;
 using NetCoreNotesApp.BLL.Core;
+using NetCoreNotesApp.DAL.Core;
 using NetCoreNotesApp.DAL.Entities;
 using NetCoreNotesApp.DAL.Interfaces;
 
@@ -8,11 +9,11 @@ namespace NetCoreNotesApp.BLL.Services
 {
     public class TagService : ITagService
     {
-        private readonly ITagRepository _tagRepository;
+        private readonly IRepositoryContext _context;
         private readonly IMapper _mapper;
-        public TagService(ITagRepository tagRepository, IMapper mapper)
+        public TagService(IRepositoryContext context, IMapper mapper)
         {
-            _tagRepository = tagRepository;
+            _context = context;
             _mapper = mapper;
         }
         public void EnsureTag(TagDTO tag)
@@ -21,12 +22,14 @@ namespace NetCoreNotesApp.BLL.Services
 
             if (tagEntity.Id > 0)
             {
-                _tagRepository.Update(tagEntity);
+                _context.Tags.Update(tagEntity);
             }
             else
             {
-                _tagRepository.Create(tagEntity);
+                _context.Tags.Create(tagEntity);
             }
+
+            _context.Commit();
         }
     }
 }

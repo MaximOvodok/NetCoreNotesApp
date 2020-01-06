@@ -32,6 +32,7 @@ namespace NetCoreNotesApp.Web
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2).AddJsonOptions(options => {
                 options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
             }); ;
 
             // In production, the React files will be served from this directory
@@ -40,11 +41,12 @@ namespace NetCoreNotesApp.Web
                 configuration.RootPath = "ClientApp/build";
             });
 
-            services.AddTransient<DbContext, NotesContext>();
+            services.AddScoped<DbContext, NotesContext>();
             services.AddDbContext<NotesContext>(options => options.UseSqlServer(GetConnectionString("DefaultConnection")));
             services.AddTransient<INoteRepository, NoteRepository>();
             services.AddTransient<ISeverityRepository, SeverityRepository>();
             services.AddTransient<ITagRepository, TagRepository>();
+            services.AddTransient<IRepositoryContext, RepositoryContext>();
             services.AddTransient<INoteService, NoteService>();
             services.AddAutoMapper(typeof(Startup));
         }
