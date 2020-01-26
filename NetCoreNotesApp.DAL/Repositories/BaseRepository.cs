@@ -15,9 +15,10 @@ namespace NetCoreNotesApp.DAL.Repositories
             DbContext = dbContext ?? throw new ArgumentException("dbContext");
             DbSet = DbContext.Set<T>();
         }
-        public void Create(T entity)
+        public T Create(T entity)
         {
             DbContext.Entry(entity).State = EntityState.Added;
+            return entity;
         }
 
         public IQueryable<T> GetAll()

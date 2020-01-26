@@ -7,6 +7,6 @@ namespace NetCoreNotesApp.BLL.Core
     {
         IList<NoteDTO> GetNotes();
         IList<SeverityDTO> GetSeverities();
-        void EnsureNote(NoteDTO note);
+        int SetNote(NoteDTO note);
     }
 }

@@ -8,68 +8,19 @@ namespace NetCoreNotesApp.DAL.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Severities",
+                name: "NotesTags",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    Text = table.Column<string>(nullable: true)
+                    NoteId = table.Column<int>(nullable: false),
+                    TagId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Severities", x => x.Id);
-                });
+                    table.PrimaryKey("PK_NotesTags", x => new { x.NoteId, x.TagId });
+                }
+            );
 
-            migrationBuilder.CreateTable(
-                name: "Notes",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    Text = table.Column<string>(nullable: true),
-                    SeverityId = table.Column<int>(nullable: true),
-                    UserId = table.Column<int>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Notes", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Notes_Severities_SeverityId",
-                        column: x => x.SeverityId,
-                        principalTable: "Severities",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Tags",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    Name = table.Column<string>(nullable: true),
-                    NoteId = table.Column<int>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Tags", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Tags_Notes_NoteId",
-                        column: x => x.NoteId,
-                        principalTable: "Notes",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Notes_SeverityId",
-                table: "Notes",
-                column: "SeverityId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Tags_NoteId",
-                table: "Tags",
-                column: "NoteId");
+            //migrationBuilder.AlterTable("")
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

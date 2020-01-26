@@ -4,6 +4,8 @@ using NetCoreNotesApp.BLL.Core;
 using NetCoreNotesApp.DAL.Core;
 using NetCoreNotesApp.DAL.Entities;
 using NetCoreNotesApp.DAL.Interfaces;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace NetCoreNotesApp.BLL.Services
 {
@@ -16,17 +18,31 @@ namespace NetCoreNotesApp.BLL.Services
             _context = context;
             _mapper = mapper;
         }
-        public void EnsureTag(TagDTO tag)
-        {
-            var tagEntity = _mapper.Map<TagDTO, Tag>(tag);
 
-            if (tagEntity.Id > 0)
+        public IList<TagDTO> SearchTags(string term)
+        {
+            IList<Tag> tags = null;
+            if (!string.IsNullOrEmpty(term))
             {
-                _context.Tags.Update(tagEntity);
+                tags = _context.Tags.GetAll().Where(t => t.Name.StartsWith(term)).ToList();
             }
             else
             {
-                _context.Tags.Create(tagEntity);
+                tags = _context.Tags.GetAll().Take(10).ToList();
+            }
+            return _mapper.Map<IList<Tag>, IList<TagDTO>>(tags);
+        }
+
+        public void SetTags(ICollection<TagDTO> tagDTOs)
+        {
+            foreach (var tagDTO in tagDTOs)
+            {
+                if (!(tagDTO.Id > 0))
+                {
+                    var tag = _mapper.Map<TagDTO, Tag>(tagDTO);
+
+                    _context.Tags.Create(tag);
+                }
             }
 
             _context.Commit();

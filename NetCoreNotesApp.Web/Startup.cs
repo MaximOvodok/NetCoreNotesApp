@@ -48,6 +48,7 @@ namespace NetCoreNotesApp.Web
             services.AddTransient<ITagRepository, TagRepository>();
             services.AddTransient<IRepositoryContext, RepositoryContext>();
             services.AddTransient<INoteService, NoteService>();
+            services.AddTransient<ITagService, TagService>();
             services.AddAutoMapper(typeof(Startup));
         }
 

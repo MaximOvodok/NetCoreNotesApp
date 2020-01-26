@@ -10,7 +10,7 @@ namespace NetCoreNotesApp.DAL.Interfaces
     {
         IQueryable<T> GetAll();
         T GetById(int id);
-        void Create(T entity);
+        T Create(T entity);
         void Update(T entity);
         void Remove(int id);
     }

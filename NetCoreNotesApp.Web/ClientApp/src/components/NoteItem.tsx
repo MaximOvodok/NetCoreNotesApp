@@ -1,13 +1,8 @@
 import React from "react";
 import ITag from "../entities/ITag";
+import { severityClasses } from "../common/Consts";
 
 const NoteItem = ({ note }: any) => {
-  const severityClasses: { [key: string]: string } = {
-    Low: "green",
-    Normal: "yellow",
-    High: "red"
-  };
-
   return (
     <li className="note-list-item">
       <a

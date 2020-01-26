@@ -12,14 +12,16 @@ namespace NetCoreNotesApp.BLL.Services
     public class NoteService : INoteService
     {
         private readonly IRepositoryContext _context;
+        private readonly ITagService _tagService;
         private readonly IMapper _mapper;
-        public NoteService(IRepositoryContext context, IMapper mapper)
+        public NoteService(IRepositoryContext context, ITagService tagService, IMapper mapper)
         {
             _context = context;
+            _tagService = tagService;
             _mapper = mapper;
         }
 
-        public void EnsureNote(NoteDTO note)
+        public int SetNote(NoteDTO note)
         {
             var noteEntity = _mapper.Map<NoteDTO, Note>(note);
             if (noteEntity.Id > 0)
@@ -32,6 +34,8 @@ namespace NetCoreNotesApp.BLL.Services
             }
 
             _context.Commit();
+
+            return noteEntity.Id;
         }
 
         public IList<NoteDTO> GetNotes()

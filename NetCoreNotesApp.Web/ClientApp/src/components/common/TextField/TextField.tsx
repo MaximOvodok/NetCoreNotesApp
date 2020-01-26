@@ -3,18 +3,33 @@ import FormField, { FormFieldProps } from "../FormField/FormField";
 import "./TextField.css";
 
 type TextFieldProps = FormFieldProps & {
+  isMulti?: boolean;
   value: string;
+  placeholder?: string;
 };
 
 const TextField = (props: TextFieldProps) => {
-  return (
+  return !props.isMulti ? (
     <input
       type="text"
       className={
         props.className ? "text-field " + props.className : "text-field"
       }
       onChange={props.onChange}
+      placeholder={props.placeholder}
     />
+  ) : (
+    <textarea
+      rows={10}
+      cols={10}
+      className={
+        props.className
+          ? "text-field multi" + props.className
+          : "text-field multi"
+      }
+      placeholder={props.placeholder}
+      onChange={props.onChange}
+    ></textarea>
   );
 };
 
