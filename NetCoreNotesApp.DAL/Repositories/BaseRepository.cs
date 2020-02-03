@@ -8,13 +8,16 @@ namespace NetCoreNotesApp.DAL.Repositories
 {
     public abstract class BaseRepository<T> : IRepository<T> where T : class
     {
-        public DbContext DbContext { get; set; }
-        public DbSet<T> DbSet { get; set; }
+        protected DbContext DbContext { get; set; }
+
+        protected DbSet<T> DbSet { get; set; }
+
         protected BaseRepository(DbContext dbContext)
         {
             DbContext = dbContext ?? throw new ArgumentException("dbContext");
             DbSet = DbContext.Set<T>();
         }
+
         public T Create(T entity)
         {
             DbContext.Entry(entity).State = EntityState.Added;

@@ -1,4 +1,5 @@
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using NetCoreNotesApp.BLL.BusinessEntities;
 using NetCoreNotesApp.BLL.Core;
 using NetCoreNotesApp.DAL.Core;
@@ -11,7 +12,9 @@ namespace NetCoreNotesApp.BLL.Services
     public class TagService : ITagService
     {
         private readonly IRepositoryContext _context;
+
         private readonly IMapper _mapper;
+
         public TagService(IRepositoryContext context, IMapper mapper)
         {
             _context = context;
@@ -20,16 +23,13 @@ namespace NetCoreNotesApp.BLL.Services
 
         public IQueryable<TagDTO> SearchTags(string term)
         {
-            IQueryable<Tag> tags = null;
-            if (!string.IsNullOrEmpty(term))
-            {
-                tags = _context.Tags.GetAll().Where(t => t.Name.StartsWith(term));
-            }
-            else
-            {
-                tags = _context.Tags.GetAll().Take(10);
-            }
-            return _mapper.ProjectTo<TagDTO>(tags);
+            var query = _context.Tags.GetAll();
+
+            query = !string.IsNullOrEmpty(term)
+                ? query.Where(t => t.Name.StartsWith(term))
+                : query.Take(10);
+
+            return query.ProjectTo<TagDTO>(_mapper.ConfigurationProvider);
         }
 
         public ICollection<Tag> SetTags(ICollection<TagDTO> tagDTOs)

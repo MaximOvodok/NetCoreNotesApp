@@ -10,17 +10,18 @@ namespace NetCoreNotesApp.Web.Controllers
     [ApiController]
     public class TagController : Controller
     {
-        ITagService _tagService;
+        private readonly ITagService _tagService;
         public TagController(ITagService tagService)
         {
             _tagService = tagService;
         }
+
         [HttpGet("Search")]
         public IQueryable<TagDTO> Search(string term)
         {
-            var tags = _tagService.SearchTags(term);
-            return tags;
+            return _tagService.SearchTags(term);
         }
+
         [HttpPost("Push")]
         public void Push(ICollection<TagDTO> tagDTOs)
         {

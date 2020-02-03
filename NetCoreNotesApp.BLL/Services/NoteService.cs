@@ -11,8 +11,11 @@ namespace NetCoreNotesApp.BLL.Services
     public class NoteService : INoteService
     {
         private readonly IRepositoryContext _context;
+
         private readonly ITagService _tagService;
+
         private readonly IMapper _mapper;
+
         public NoteService(IRepositoryContext context, ITagService tagService, IMapper mapper)
         {
             _context = context;

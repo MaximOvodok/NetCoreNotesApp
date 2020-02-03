@@ -42,7 +42,6 @@ namespace NetCoreNotesApp.Web
             });
 
             services
-                .AddScoped<DbContext, NotesContext>()
                 .AddDbContext<NotesContext>(options => options.UseSqlServer(GetConnectionString("DefaultConnection")))
                 .AddTransient<INoteRepository, NoteRepository>()
                 .AddTransient<ISeverityRepository, SeverityRepository>()
@@ -97,7 +96,7 @@ namespace NetCoreNotesApp.Web
 
         private string GetConnectionString(string key)
         {
-            string path = Path.Combine(Directory.GetCurrentDirectory(), "App_Data");
+            var path = Path.Combine(Directory.GetCurrentDirectory(), "App_Data");
             return Configuration.GetConnectionString(key).Replace("|DataDirectory|", path);
         }
     }

@@ -14,17 +14,17 @@ namespace NetCoreNotesApp.Web.Controllers
         {
             _noteService = noteService;
         }
+
         [HttpGet("Get")]
         public IQueryable<NoteDTO> Get()
         {
-            var notes = _noteService.GetNotes();
-            return notes;
+            return _noteService.GetNotes();
         }
+
         [HttpGet("Severities")]
         public IQueryable<SeverityDTO> GetSeverities()
         {
-            var severities = _noteService.GetSeverities();
-            return severities;
+            return _noteService.GetSeverities();
         }
 
         [HttpPost("Create")]
