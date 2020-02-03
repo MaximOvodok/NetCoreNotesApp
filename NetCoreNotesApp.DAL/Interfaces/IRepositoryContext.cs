@@ -7,7 +7,7 @@ namespace NetCoreNotesApp.DAL.Core
         INoteRepository Notes { get; }
         ISeverityRepository Severities { get; }
         ITagRepository Tags { get; }
-
+        INotesTagRepository NotesTags { get; }
         void Commit();
     }
 }

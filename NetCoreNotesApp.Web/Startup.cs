@@ -41,15 +41,17 @@ namespace NetCoreNotesApp.Web
                 configuration.RootPath = "ClientApp/build";
             });
 
-            services.AddScoped<DbContext, NotesContext>();
-            services.AddDbContext<NotesContext>(options => options.UseSqlServer(GetConnectionString("DefaultConnection")));
-            services.AddTransient<INoteRepository, NoteRepository>();
-            services.AddTransient<ISeverityRepository, SeverityRepository>();
-            services.AddTransient<ITagRepository, TagRepository>();
-            services.AddTransient<IRepositoryContext, RepositoryContext>();
-            services.AddTransient<INoteService, NoteService>();
-            services.AddTransient<ITagService, TagService>();
-            services.AddAutoMapper(typeof(Startup));
+            services
+                .AddScoped<DbContext, NotesContext>()
+                .AddDbContext<NotesContext>(options => options.UseSqlServer(GetConnectionString("DefaultConnection")))
+                .AddTransient<INoteRepository, NoteRepository>()
+                .AddTransient<ISeverityRepository, SeverityRepository>()
+                .AddTransient<ITagRepository, TagRepository>()
+                .AddTransient<INotesTagRepository, NotesTagRepository>()
+                .AddTransient<IRepositoryContext, RepositoryContext>()
+                .AddTransient<INoteService, NoteService>()
+                .AddTransient<ITagService, TagService>()
+                .AddAutoMapper(typeof(Startup));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

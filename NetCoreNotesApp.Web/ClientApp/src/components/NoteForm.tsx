@@ -159,17 +159,20 @@ class NoteForm extends React.Component {
     var note: INote = {
       text: this.state.formData.text,
       severityId: parseInt(this.state.formData.severity.key),
-      tags: []
-    };
-
-    NoteService.createNote(note).then((noteId: any) => {
-      var tags = this.state.formData.tags.map(t => ({
+      tags: this.state.formData.tags.map(t => ({
         id: t.key,
         name: t.value,
-        noteId: noteId
-      }));
-      return TagService.createTags(tags, noteId);
-    });
+        noteId: 0
+      }))
+    };
+
+    NoteService.createNote(note)
+      .then(() => {
+        window.location.href = "/";
+      })
+      .catch((error: any) => {
+        console.error(error);
+      });
   }
 
   private onSeverityChange(event: any, key: string) {

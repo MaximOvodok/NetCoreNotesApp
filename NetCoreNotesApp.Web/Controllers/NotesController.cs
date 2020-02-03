@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using NetCoreNotesApp.BLL.BusinessEntities;
 using NetCoreNotesApp.BLL.Core;
@@ -14,13 +15,13 @@ namespace NetCoreNotesApp.Web.Controllers
             _noteService = noteService;
         }
         [HttpGet("Get")]
-        public IList<NoteDTO> Get()
+        public IQueryable<NoteDTO> Get()
         {
             var notes = _noteService.GetNotes();
             return notes;
         }
         [HttpGet("Severities")]
-        public IList<SeverityDTO> GetSeverities()
+        public IQueryable<SeverityDTO> GetSeverities()
         {
             var severities = _noteService.GetSeverities();
             return severities;

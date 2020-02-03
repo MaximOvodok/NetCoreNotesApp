@@ -3,7 +3,6 @@ using NetCoreNotesApp.BLL.BusinessEntities;
 using NetCoreNotesApp.BLL.Core;
 using NetCoreNotesApp.DAL.Core;
 using NetCoreNotesApp.DAL.Entities;
-using NetCoreNotesApp.DAL.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -19,33 +18,39 @@ namespace NetCoreNotesApp.BLL.Services
             _mapper = mapper;
         }
 
-        public IList<TagDTO> SearchTags(string term)
+        public IQueryable<TagDTO> SearchTags(string term)
         {
-            IList<Tag> tags = null;
+            IQueryable<Tag> tags = null;
             if (!string.IsNullOrEmpty(term))
             {
-                tags = _context.Tags.GetAll().Where(t => t.Name.StartsWith(term)).ToList();
+                tags = _context.Tags.GetAll().Where(t => t.Name.StartsWith(term));
             }
             else
             {
-                tags = _context.Tags.GetAll().Take(10).ToList();
+                tags = _context.Tags.GetAll().Take(10);
             }
-            return _mapper.Map<IList<Tag>, IList<TagDTO>>(tags);
+            return _mapper.ProjectTo<TagDTO>(tags);
         }
 
-        public void SetTags(ICollection<TagDTO> tagDTOs)
+        public ICollection<Tag> SetTags(ICollection<TagDTO> tagDTOs)
         {
+            var tags = new List<Tag>();
+
             foreach (var tagDTO in tagDTOs)
             {
-                if (!(tagDTO.Id > 0))
-                {
-                    var tag = _mapper.Map<TagDTO, Tag>(tagDTO);
+                var tag = _mapper.Map<TagDTO, Tag>(tagDTO);
 
+                if (!(tag.Id > 0))
+                {
                     _context.Tags.Create(tag);
                 }
+
+                tags.Add(tag);
             }
 
             _context.Commit();
+
+            return tags;
         }
     }
 }

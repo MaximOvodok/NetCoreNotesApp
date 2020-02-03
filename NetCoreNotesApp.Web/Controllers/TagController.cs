@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using NetCoreNotesApp.BLL.BusinessEntities;
 using NetCoreNotesApp.BLL.Core;
@@ -15,7 +16,7 @@ namespace NetCoreNotesApp.Web.Controllers
             _tagService = tagService;
         }
         [HttpGet("Search")]
-        public IList<TagDTO> Search(string term)
+        public IQueryable<TagDTO> Search(string term)
         {
             var tags = _tagService.SearchTags(term);
             return tags;

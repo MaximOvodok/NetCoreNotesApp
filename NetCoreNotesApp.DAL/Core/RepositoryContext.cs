@@ -9,12 +9,14 @@ namespace NetCoreNotesApp.DAL.Core
         public INoteRepository Notes { get; private set; }
         public ISeverityRepository Severities { get; private set; }
         public ITagRepository Tags { get; private set; }
-        public RepositoryContext(DbContext dbContext, INoteRepository notes, ISeverityRepository severities, ITagRepository tags)
+        public INotesTagRepository NotesTags { get; private set; }
+        public RepositoryContext(DbContext dbContext, INoteRepository notes, ISeverityRepository severities, ITagRepository tags, INotesTagRepository notesTags)
         {
             _dbContext = dbContext;
             Notes = notes;
             Severities = severities;
             Tags = tags;
+            NotesTags = notesTags;
         }
 
         public void Commit()

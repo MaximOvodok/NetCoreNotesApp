@@ -20,7 +20,20 @@ namespace NetCoreNotesApp.DAL.Migrations
                 }
             );
 
-            //migrationBuilder.AlterTable("")
+            migrationBuilder.AddForeignKey(
+                name: "FK_NotesTagsNotes",
+                table: "NotesTags",
+                column: "NoteId",
+                principalTable: "Notes",
+                principalColumn: "Id");
+            migrationBuilder.AddForeignKey(
+                name: "FK_NotesTagsTags",
+                table: "NotesTags",
+                column: "TagId",
+                principalTable: "Tags",
+                principalColumn: "Id");
+
+            migrationBuilder.DropForeignKey("FK_Tags_Notes_NoteId", "Tags");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

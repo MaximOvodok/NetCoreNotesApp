@@ -12,5 +12,22 @@ namespace NetCoreNotesApp.DAL.Core
         public DbSet<Note> Notes { get; set; }
         public DbSet<Tag> Tags { get; set; }
         public DbSet<Severity> Severities { get; set; }
+        public DbSet<NotesTag> NotesTags { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<NotesTag>()
+            .HasKey(t => new { t.NoteId, t.TagId });
+
+            modelBuilder.Entity<NotesTag>()
+                .HasOne(nt => nt.Note)
+                .WithMany(n => n.NotesTags)
+                .HasForeignKey(nt => nt.NoteId);
+
+            modelBuilder.Entity<NotesTag>()
+                .HasOne(nt => nt.Tag)
+                .WithMany(t => t.NotesTags)
+                .HasForeignKey(nt => nt.TagId);
+        }
     }
 }

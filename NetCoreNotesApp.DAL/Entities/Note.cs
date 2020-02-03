@@ -8,11 +8,11 @@ namespace NetCoreNotesApp.DAL.Entities
         public int SeverityId { get; set; }
         public Severity Severity { get; set; }
         public int UserId { get; set; }
-        public ICollection<Tag> Tags { get; set; }
+        public IList<NotesTag> NotesTags { get; set; }
 
         public Note()
         {
-            Tags = new HashSet<Tag>();
+            NotesTags = new List<NotesTag>();
         }
     }
 }

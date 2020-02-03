@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
@@ -30,24 +29,41 @@ namespace NetCoreNotesApp.BLL.Services
             }
             else
             {
-                _context.Notes.Create(noteEntity);
-            }
+                var newNote = _context.Notes.Create(noteEntity);
+                _context.Commit();
 
-            _context.Commit();
+                var tags = _tagService.SetTags(note.Tags);
+
+                foreach (var tag in tags)
+                {
+                    var existingRelation = _context.NotesTags.GetAll().FirstOrDefault(nt => nt.NoteId == newNote.Id && nt.TagId == tag.Id);
+
+                    if (existingRelation == null)
+                    {
+                        _context.NotesTags.Create(new NotesTag { NoteId = newNote.Id, TagId = tag.Id });
+                    }
+                }
+
+                _context.Commit();
+            }
 
             return noteEntity.Id;
         }
 
-        public IList<NoteDTO> GetNotes()
+        public IQueryable<NoteDTO> GetNotes()
         {
-            var noteEntities = _context.Notes.GetAll().Include(n => n.Severity).Include(n => n.Tags).ToList();
-            return _mapper.Map<IList<Note>, IList<NoteDTO>>(noteEntities);
+            var noteEntities = _context.Notes.GetAll()
+                .Include(_ => _.Severity)
+                .Include(_ => _.NotesTags)
+                .ThenInclude(_ => _.Tag);
+
+            return _mapper.ProjectTo<NoteDTO>(noteEntities);
         }
 
-        public IList<SeverityDTO> GetSeverities()
+        public IQueryable<SeverityDTO> GetSeverities()
         {
-            var severityEntities = _context.Severities.GetAll().ToList();
-            return _mapper.Map<IList<Severity>, IList<SeverityDTO>>(severityEntities);
+            var severityEntities = _context.Severities.GetAll();
+            return _mapper.ProjectTo<SeverityDTO>(severityEntities);
         }
     }
 }

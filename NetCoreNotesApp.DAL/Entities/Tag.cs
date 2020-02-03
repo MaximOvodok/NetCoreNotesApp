@@ -1,9 +1,15 @@
+using System.Collections.Generic;
+
 namespace NetCoreNotesApp.DAL.Entities
 {
     public class Tag : BaseEntity
     {
         public string Name { get; set; }
-        public int NoteId { get; set; }
-        public Note Note { get; set; }
+        public IList<NotesTag> NotesTags { get; set; }
+
+        public Tag()
+        {
+            NotesTags = new List<NotesTag>();
+        }
     }
 }
