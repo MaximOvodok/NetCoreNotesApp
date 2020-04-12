@@ -1,6 +1,6 @@
 import React from "react";
 import FormField, { FormFieldProps } from "../FormField/FormField";
-import "./DropdownField.css";
+import "./DropdownField.scss";
 
 type DropdownFieldProps = FormFieldProps & {
   options: Array<{ key: string; value: string }>;
@@ -8,14 +8,12 @@ type DropdownFieldProps = FormFieldProps & {
 };
 
 const DropdownField = (props: DropdownFieldProps): JSX.Element => {
+  const className = props.className
+    ? props.className + " dropdown-field"
+    : "dropdown-field";
+
   return (
-    <select
-      key={props.key}
-      className={
-        props.className ? props.className + " dropdown-field" : "dropdown-field"
-      }
-      onChange={props.onChange}
-    >
+    <select key={props.key} className={className} onChange={props.onChange}>
       {props.options.map((option: { key: string; value: string }) => (
         <option key={option.key} value={option.key}>
           {option.value}

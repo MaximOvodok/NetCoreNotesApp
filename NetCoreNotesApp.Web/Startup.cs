@@ -42,6 +42,7 @@ namespace NetCoreNotesApp.Web
             });
 
             services
+                .AddScoped<DbContext, NotesContext>()
                 .AddDbContext<NotesContext>(options => options.UseSqlServer(GetConnectionString("DefaultConnection")))
                 .AddTransient<INoteRepository, NoteRepository>()
                 .AddTransient<ISeverityRepository, SeverityRepository>()
@@ -49,6 +50,7 @@ namespace NetCoreNotesApp.Web
                 .AddTransient<INotesTagRepository, NotesTagRepository>()
                 .AddTransient<IRepositoryContext, RepositoryContext>()
                 .AddTransient<INoteService, NoteService>()
+                .AddTransient<INoteTagService, NoteTagService>()
                 .AddTransient<ITagService, TagService>()
                 .AddAutoMapper(typeof(Startup));
         }

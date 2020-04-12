@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using NetCoreNotesApp.DAL.Interfaces;
 

@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
 using NetCoreNotesApp.DAL.Entities;
 
 namespace NetCoreNotesApp.DAL.Core

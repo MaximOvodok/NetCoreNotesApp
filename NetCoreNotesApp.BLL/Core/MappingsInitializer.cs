@@ -13,9 +13,11 @@ namespace NetCoreNotesApp.BLL.Core
                 .ForMember(m => m.Tags,
                     opt => opt.MapFrom(m => m.NotesTags.Select(nt => nt.Tag)));
             profile.CreateMap<Severity, SeverityDTO>();
+            profile.CreateMap<NotesTag, NoteTagDTO>();
             profile.CreateMap<Tag, TagDTO>();
             profile.CreateMap<NoteDTO, Note>();
             profile.CreateMap<SeverityDTO, Severity>();
+            profile.CreateMap<NoteTagDTO, NotesTag>();
             profile.CreateMap<TagDTO, Tag>();
         }
     }

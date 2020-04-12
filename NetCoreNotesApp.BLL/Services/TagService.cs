@@ -32,7 +32,7 @@ namespace NetCoreNotesApp.BLL.Services
             return query.ProjectTo<TagDTO>(_mapper.ConfigurationProvider);
         }
 
-        public ICollection<Tag> SetTags(ICollection<TagDTO> tagDTOs)
+        public ICollection<Tag> CreateTags(ICollection<TagDTO> tagDTOs)
         {
             var tags = new List<Tag>();
 
@@ -40,7 +40,7 @@ namespace NetCoreNotesApp.BLL.Services
             {
                 var tag = _mapper.Map<TagDTO, Tag>(tagDTO);
 
-                if (!(tag.Id > 0))
+                if (tag.Id == 0)
                 {
                     _context.Tags.Create(tag);
                 }
@@ -51,6 +51,17 @@ namespace NetCoreNotesApp.BLL.Services
             _context.Commit();
 
             return tags;
+        }
+
+        public void RemoveUnusedTag(int id)
+        {
+            var isTagUsed = _context.NotesTags.GetAll().Any(nt => nt.TagId == id);
+
+            if (!isTagUsed)
+            {
+                _context.Tags.Remove(id);
+                _context.Commit();
+            }
         }
     }
 }

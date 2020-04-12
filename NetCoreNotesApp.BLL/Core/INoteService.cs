@@ -8,6 +8,7 @@ namespace NetCoreNotesApp.BLL.Core
     {
         IQueryable<NoteDTO> GetNotes();
         IQueryable<SeverityDTO> GetSeverities();
-        int SetNote(NoteDTO note);
+        int CreateNote(NoteDTO note);
+        int UpdateNote(NoteDTO note);
     }
 }

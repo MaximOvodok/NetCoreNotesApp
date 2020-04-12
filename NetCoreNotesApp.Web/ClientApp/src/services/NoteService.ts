@@ -7,15 +7,16 @@ class NoteService {
       fetch(window.location.origin + "/api/Notes/Create", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
+          Id: note.id,
           SeverityId: note.severityId,
           Text: note.text,
-          Tags: note.tags
-        })
+          Tags: note.tags,
+        }),
       })
-        .then(response => response.json())
+        .then((response) => response.json())
         .then((noteId: number) => {
           resolve(noteId);
         })
@@ -25,15 +26,28 @@ class NoteService {
     });
   }
 
-  public static getSeverities(): Promise<Array<ISeverity>> {
+  public static getSeverities(
+    controller?: AbortController
+  ): Promise<Array<ISeverity>> {
     return new Promise((resolve, reject) => {
+      let requestInfo: any = {
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+      };
+
+      if (controller) {
+        requestInfo["signal"] = controller.signal;
+      }
+
       fetch(window.location.origin + "/api/Notes/Severities", {
         headers: {
           "Content-Type": "application/json",
-          Accept: "application/json"
-        }
+          Accept: "application/json",
+        },
       })
-        .then(response => response.json())
+        .then((response) => response.json())
         .then((severities: Array<ISeverity>) => {
           resolve(severities);
         })
@@ -48,14 +62,14 @@ class NoteService {
       fetch(window.location.origin + "/api/Notes/Get", {
         headers: {
           "Content-Type": "application/json",
-          Accept: "application/json"
-        }
+          Accept: "application/json",
+        },
       })
-        .then(response => response.json())
+        .then((response) => response.json())
         .then((notes: any) => {
           resolve(notes);
         })
-        .catch(error => {
+        .catch((error) => {
           reject(error);
         });
     });

@@ -1,32 +1,33 @@
 import React from "react";
-import Spinner from "../../Spinner/Spinner";
+import { Spinner, Button } from "../../controls";
 import NoteList from "../../NoteList";
-import Button from "../../Button/Button";
-import NoteService from "../../../services/NoteService";
 import { Link } from "react-router-dom";
-import "./MainScreen.css";
+import "./MainScreen.scss";
 
-class MainScreen extends React.Component {
-  state = { notes: [], loading: true };
+import { bindActionCreators } from "redux";
+import { connect } from "react-redux";
+import { actionCreators } from "../../../store/Notes";
 
+import { INoteProps } from "../../../types/ComponentsPropsTypes";
+
+class MainScreen extends React.Component<INoteProps, {}> {
   componentDidMount() {
-     NoteService.getNotes().then(notes => {
-      this.setState({ notes, loading: false });
-    });
+    this.props.requestNotes();
   }
 
   render() {
-    const { loading, notes } = this.state;
-    const component = loading ? (
+    const component = this.props.isNotesFetching ? (
       <Spinner />
     ) : (
       <div>
         <div className="add-note-button-container">
           <Button className="add-note-button">
-            <Link to="/new">Add note</Link>
+            <Link to={{ pathname: "/new", state: { isOpen: true } }}>
+              Add note
+            </Link>
           </Button>
         </div>
-        <NoteList notes={notes} />
+        <NoteList notes={this.props.items} />
       </div>
     );
 
@@ -34,4 +35,7 @@ class MainScreen extends React.Component {
   }
 }
 
-export default MainScreen;
+export default connect(
+  (state) => state.notes,
+  (dispatch) => bindActionCreators(actionCreators, dispatch)
+)(MainScreen);

@@ -1,21 +1,29 @@
 import React from "react";
-import ITag from "../entities/ITag";
+import { ITag } from "../entities";
 import { severityClasses } from "../common/Consts";
+import { Link } from "react-router-dom";
+import { INoteItemProps } from "../types/ComponentsPropsTypes";
 
-const NoteItem = ({ note }: any) => {
+const NoteItem = (props: INoteItemProps) => {
+  const severityClass = props.note.severity
+    ? severityClasses[props.note.severity.text].concat(" ", "note").trim()
+    : "note";
+
   return (
-    <li className="note-list-item">
-      <a
-        href="#"
-        className={severityClasses[note.severity.text] + " " + "note"}
+    <li className="note-list-item" onClick={props.onClick}>
+      <Link
+        to={{ pathname: "/edit", state: { isOpen: true, note: props.note } }}
+        className={severityClass}
       >
-        <p>{note.text}</p>
+        <p>{props.note.text}</p>
         <ul className="note-tags-list">
-          {note.tags.map((tag: ITag) => (
-            <li className="note-tags-list-item">{tag.name}</li>
+          {props.note.tags.map((tag: ITag) => (
+            <li key={tag.id} className="note-tags-list-item">
+              {tag.name}
+            </li>
           ))}
         </ul>
-      </a>
+      </Link>
     </li>
   );
 };

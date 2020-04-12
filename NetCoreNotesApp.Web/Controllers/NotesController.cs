@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using NetCoreNotesApp.BLL.BusinessEntities;
 using NetCoreNotesApp.BLL.Core;
@@ -31,7 +30,13 @@ namespace NetCoreNotesApp.Web.Controllers
         public int Create([FromBody] NoteDTO noteDTO)
         {
             noteDTO.UserId = 1;
-            return _noteService.SetNote(noteDTO);
+
+            if (noteDTO.Id > 0)
+            {
+                return _noteService.UpdateNote(noteDTO);
+            }
+            
+            return _noteService.CreateNote(noteDTO);
         } 
     }
 }

@@ -1,9 +1,8 @@
 import React from "react";
 import { Layout } from "./components/default/Layout";
-import MainScreen from "./components/screens/MainScreen/MainScreen";
-import FormScreen from "./components/screens/FormScreen/FormScreen";
-import "./App.css";
-import { BrowserRouter as Router, Route } from "react-router-dom";
+import { MainScreen, FormScreen } from "./components/screens";
+import "./App.scss";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 class App extends React.Component {
@@ -13,8 +12,11 @@ class App extends React.Component {
     return (
       <Router>
         <Layout>
-          <Route path="/" exact component={MainScreen} />
-          <Route path="/new" component={FormScreen} />
+          <Switch>
+            <Route path="/" exact component={MainScreen} />
+            <Route path="/new" component={FormScreen} />
+            <Route path="/edit" component={FormScreen} />
+          </Switch>
         </Layout>
       </Router>
     );

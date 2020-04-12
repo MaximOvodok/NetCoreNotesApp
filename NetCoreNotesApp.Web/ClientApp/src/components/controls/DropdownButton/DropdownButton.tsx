@@ -1,9 +1,9 @@
-import React, { useState, SyntheticEvent } from "react";
+import React, { useState } from "react";
 import {
   ButtonDropdown,
   DropdownToggle,
   DropdownMenu,
-  DropdownItem
+  DropdownItem,
 } from "reactstrap";
 
 interface IDropdownButtonProps {
@@ -16,14 +16,14 @@ const DropdownButton = (props: IDropdownButtonProps) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const toggle = () => {
-    setDropdownOpen(prevState => !prevState);
+    setDropdownOpen((prevState) => !prevState);
   };
 
   return (
     <ButtonDropdown isOpen={dropdownOpen} toggle={toggle}>
       <DropdownToggle caret>{props.children}</DropdownToggle>
       <DropdownMenu>
-        {props.items.map(i => (
+        {props.items.map((i) => (
           <DropdownItem
             id={i.key}
             onClick={props.onSelect}

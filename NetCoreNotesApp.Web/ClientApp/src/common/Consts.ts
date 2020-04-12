@@ -1,7 +1,7 @@
 const severityClasses: { [key: string]: string } = {
   Low: "green",
   Normal: "yellow",
-  High: "red"
+  High: "red",
 };
 
 export { severityClasses };

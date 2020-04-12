@@ -25,7 +25,7 @@ namespace NetCoreNotesApp.Web.Controllers
         [HttpPost("Push")]
         public void Push(ICollection<TagDTO> tagDTOs)
         {
-            _tagService.SetTags(tagDTOs);
+            _tagService.CreateTags(tagDTOs);
         }
     }
 }

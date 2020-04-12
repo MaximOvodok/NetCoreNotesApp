@@ -1,6 +1,6 @@
 import React from "react";
 import FormField, { FormFieldProps } from "../FormField/FormField";
-import "./TextField.css";
+import "./TextField.scss";
 
 type TextFieldProps = FormFieldProps & {
   isMulti?: boolean;
@@ -17,6 +17,7 @@ const TextField = (props: TextFieldProps) => {
       }
       onChange={props.onChange}
       placeholder={props.placeholder}
+      value={props.value}
     />
   ) : (
     <textarea
@@ -29,6 +30,7 @@ const TextField = (props: TextFieldProps) => {
       }
       placeholder={props.placeholder}
       onChange={props.onChange}
+      value={props.value}
     ></textarea>
   );
 };

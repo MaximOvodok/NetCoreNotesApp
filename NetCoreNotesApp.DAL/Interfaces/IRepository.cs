@@ -1,8 +1,4 @@
-using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using System;
 using System.Linq;
-using System.Linq.Expressions;
 
 namespace NetCoreNotesApp.DAL.Interfaces
 {
@@ -13,5 +9,6 @@ namespace NetCoreNotesApp.DAL.Interfaces
         T Create(T entity);
         void Update(T entity);
         void Remove(int id);
+        void Remove(T entity);
     }
 }

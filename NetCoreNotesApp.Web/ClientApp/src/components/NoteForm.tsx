@@ -1,81 +1,78 @@
-import React, { SyntheticEvent } from "react";
-import Button from "./Button/Button";
-import TextField from "./common/TextField/TextField";
-import "./NoteForm.css";
-import NoteService from "../services/NoteService";
-import TagService from "../services/TagService";
-import ISeverity from "../entities/ISeverity";
-import INote from "../entities/INote";
+import React, { SyntheticEvent, useState, useEffect } from "react";
+import { Button, TextField, DropdownButton } from "./controls";
+import "./NoteForm.scss";
+import { NoteService, TagService } from "../services";
+import { INote, ITag } from "../entities";
 import "open-iconic/font/css/open-iconic-bootstrap.css";
-import DropdownButton from "./DropdownButton/DropdownButton";
 import { severityClasses } from "../common/Consts";
 import AsyncCreatableSelect from "react-select/async-creatable";
 
-interface IFormData {
-  text: string;
-  severity: { key: string; value: string };
-  tags: Array<{ key: number; value: string }>;
-}
+import { Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
 
-interface INoteFormState {
-  severities: Array<{ key: string; value: string }>;
-  formData: IFormData;
-  isSeverityDropdownOpen: boolean;
-}
+import { INoteFormProps } from "../types/ComponentsPropsTypes";
+import { IFormData } from "../types/ComponentsStateTypes";
+import ComponentsHelper from "../helpers/ComponentsHelper";
+import { withRouter } from "react-router";
 
-class NoteForm extends React.Component {
-  state: INoteFormState = {
-    severities: [],
-    formData: {
-      text: "",
-      severity: { key: "2", value: "Normal" },
-      tags: []
-    },
-    isSeverityDropdownOpen: false
-  };
+const NoteForm = (props: INoteFormProps) => {
+  const [severities, setSeverities] = useState<
+    Array<{ key: number; value: string; isActive: boolean }>
+  >([]);
+  const [formData, setFormData] = useState<IFormData>({
+    id: 0,
+    text: "",
+    severity: { key: "2", value: "Normal" },
+    tags: [],
+  });
 
-  componentDidMount() {
-    NoteService.getSeverities().then((severities: Array<ISeverity>) => {
-      this.setState({
-        severities: severities.map((severity: ISeverity) =>
-          severity.id.toString() === this.state.formData.severity.key
-            ? {
-                key: severity.id,
-                value: severity.text,
-                isActive: true
-              }
-            : {
-                key: severity.id,
-                value: severity.text,
-                isActive: false
-              }
+  useEffect(() => {
+    let controller = new AbortController();
+
+    const fetchSeverities = async () => {
+      var severities = await NoteService.getSeverities(controller);
+
+      setSeverities(
+        ComponentsHelper.ConvertSeveritiesToState(
+          severities,
+          formData.severity.key
         )
-      });
+      );
+    };
+
+    fetchSeverities().then(() => {
+      if (props.location?.state && props.location?.state["note"]) {
+        let inputNote = props.location?.state["note"] as INote;
+
+        setFormData({
+          ...formData,
+          id: inputNote.id,
+          text: inputNote.text,
+          severity: {
+            ...formData.severity,
+            key: inputNote.severity ? inputNote.severity.id.toString() : "2",
+            value: inputNote.severity ? inputNote.severity.text : "Normal",
+          },
+          tags: inputNote.tags.map((tag: ITag) => ({
+            value: tag.id,
+            label: tag.name,
+          })),
+        });
+      }
     });
-  }
 
-  componentDidUpdate(prevProps: any, prevState: any) {
-    if (prevState.formData.severity.key != this.state.formData.severity.key) {
-      this.setState({
-        severities: this.state.severities.map((severity: any) =>
-          severity.key.toString() === this.state.formData.severity.key
-            ? {
-                key: severity.key,
-                value: severity.value,
-                isActive: true
-              }
-            : {
-                key: severity.key,
-                value: severity.value,
-                isActive: false
-              }
-        )
-      });
-    }
-  }
+    return () => {
+      controller.abort();
+    };
+  }, []);
 
-  private promiseOptions(inputValue: string): Promise<any> {
-    return new Promise<any>(resolve => {
+  useEffect((): void => {
+    setSeverities(
+      ComponentsHelper.ChangeActiveSeverity(severities, formData.severity.key)
+    );
+  }, [formData.severity.key]);
+
+  function promiseOptions(inputValue: string): Promise<any> {
+    return new Promise<any>((resolve) => {
       if (!inputValue) {
         resolve([]);
       } else {
@@ -83,7 +80,7 @@ class NoteForm extends React.Component {
           resolve(
             tags.map((t: any) => ({
               value: t.id,
-              label: t.name
+              label: t.name,
             }))
           );
         });
@@ -91,80 +88,20 @@ class NoteForm extends React.Component {
     });
   }
 
-  render() {
-    return (
-      <div className="form-container">
-        <form
-          onSubmit={e => this.onSubmit(e)}
-          className={severityClasses[this.state.formData.severity.value]}
-        >
-          <fieldset>
-            <TextField
-              isMulti
-              key={"text"}
-              placeholder="Text"
-              onChange={e => this.onChange(e, "text")}
-              value={this.state.formData.text}
-            />
-            <div className="form-field">
-              <DropdownButton
-                items={this.state.severities}
-                onSelect={e => this.onSeverityChange(e, "severity")}
-              >
-                <span className="oi oi-warning">Severity</span>
-              </DropdownButton>
-            </div>
-            <div className="form-field">
-              <AsyncCreatableSelect
-                isMulti
-                cacheOptions
-                defaultOptions
-                onChange={(newValue: any, actionMeta: any) =>
-                  this.onTagSelect(newValue, actionMeta)
-                }
-                loadOptions={this.promiseOptions}
-              />
-            </div>
-            <div className="form-field">
-              <Button type="submit" />
-            </div>
-          </fieldset>
-        </form>
-      </div>
-    );
-  }
-
-  private onTagSelect(newValue: any, actionMeta: any) {
-    this.setState({
-      formData: {
-        ...this.state.formData,
-        tags: newValue.map((t: any) =>
-          t.__isNew__
-            ? {
-                key: 0,
-                value: t.label
-              }
-            : {
-                key: t.value,
-                value: t.label
-              }
-        )
-      }
+  function onTagSelect(
+    newValue: Array<{ label: string; value: number; __isNew__: boolean }>,
+    actionMeta: any
+  ) {
+    setFormData({
+      ...formData,
+      tags: ComponentsHelper.convertTagsFromState(newValue),
     });
   }
 
-  private onSubmit(event: SyntheticEvent) {
+  function onSubmit(event: SyntheticEvent) {
     event.preventDefault();
 
-    var note: INote = {
-      text: this.state.formData.text,
-      severityId: parseInt(this.state.formData.severity.key),
-      tags: this.state.formData.tags.map(t => ({
-        id: t.key,
-        name: t.value,
-        noteId: 0
-      }))
-    };
+    let note: INote = ComponentsHelper.ConvertFormStateToNote(formData);
 
     NoteService.createNote(note)
       .then(() => {
@@ -175,28 +112,73 @@ class NoteForm extends React.Component {
       });
   }
 
-  private onSeverityChange(event: any, key: string) {
+  function onSeverityChange(event: any, key: string) {
     event.preventDefault();
 
-    this.setState({
-      formData: {
-        ...this.state.formData,
-        [key]: {
-          key: event.target.id,
-          value: event.target.textContent
-        }
-      }
+    setFormData({
+      ...formData,
+      [key]: {
+        key: event.target.id,
+        value: event.target.textContent,
+      },
     });
   }
 
-  private onChange(event: any, key: string) {
-    this.setState({
-      formData: {
-        ...this.state.formData,
-        [key]: event.target.value
-      }
+  function onChange(event: any, key: string) {
+    setFormData({
+      ...formData,
+      [key]: event.target.value,
     });
   }
-}
 
-export default NoteForm;
+  let isOpen = props.location?.state ? props.location.state["isOpen"] : false;
+
+  return (
+    <Modal isOpen={isOpen || false}>
+      <ModalHeader>Modal title</ModalHeader>
+      <ModalBody>
+        <div className="form-container">
+          <form
+            onSubmit={(e) => onSubmit(e)}
+            className={severityClasses[formData.severity.value]}
+          >
+            <fieldset>
+              <TextField
+                isMulti
+                key={"text"}
+                placeholder="Text"
+                onChange={(e) => onChange(e, "text")}
+                value={formData.text}
+              />
+              <div className="form-field">
+                <DropdownButton
+                  items={severities}
+                  onSelect={(e) => onSeverityChange(e, "severity")}
+                >
+                  <span className="oi oi-warning">Severity</span>
+                </DropdownButton>
+              </div>
+              <div className="form-field">
+                <AsyncCreatableSelect
+                  isMulti
+                  cacheOptions
+                  defaultOptions
+                  onChange={(newValue: any, actionMeta: any) =>
+                    onTagSelect(newValue, actionMeta)
+                  }
+                  loadOptions={promiseOptions}
+                  value={formData.tags}
+                />
+              </div>
+            </fieldset>
+            <div className="form-field">
+              <Button type="submit" />
+            </div>
+          </form>
+        </div>
+      </ModalBody>
+    </Modal>
+  );
+};
+
+export default withRouter(NoteForm);

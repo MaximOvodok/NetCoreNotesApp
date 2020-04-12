@@ -7,7 +7,8 @@ namespace NetCoreNotesApp.BLL.Core
 {
     public interface ITagService
     {
-        ICollection<Tag> SetTags(ICollection<TagDTO> tagDTOs);
+        ICollection<Tag> CreateTags(ICollection<TagDTO> tagDTOs);
         IQueryable<TagDTO> SearchTags(string term);
+        void RemoveUnusedTag(int id);
     }
 }
