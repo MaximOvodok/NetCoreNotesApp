@@ -61,6 +61,7 @@ class NoteService {
     return new Promise<Array<INote>>((resolve, reject) => {
       fetch(window.location.origin + "/api/Notes/Get", {
         headers: {
+          "Cache-Control": "only-if-cached",
           "Content-Type": "application/json",
           Accept: "application/json",
         },

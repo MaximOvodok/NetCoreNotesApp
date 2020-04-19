@@ -1,14 +1,16 @@
 import React from "react";
 import { Spinner, Button } from "../../controls";
 import NoteList from "../../NoteList";
-import { Link } from "react-router-dom";
+import { Link, Route } from "react-router-dom";
 import "./MainScreen.scss";
 
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { actionCreators } from "../../../store/Notes";
+import { RequestNotesActionState } from "../../../types/StoreTypes";
 
 import { INoteProps } from "../../../types/ComponentsPropsTypes";
+import FormScreen from "../FormScreen/FormScreen";
 
 class MainScreen extends React.Component<INoteProps, {}> {
   componentDidMount() {
@@ -28,6 +30,12 @@ class MainScreen extends React.Component<INoteProps, {}> {
           </Button>
         </div>
         <NoteList notes={this.props.items} />
+        <Route
+          path="/(new|edit)"
+          render={() => {
+            return <FormScreen />;
+          }}
+        />
       </div>
     );
 
@@ -36,6 +44,6 @@ class MainScreen extends React.Component<INoteProps, {}> {
 }
 
 export default connect(
-  (state) => state.notes,
+  (state: RequestNotesActionState) => state.notes,
   (dispatch) => bindActionCreators(actionCreators, dispatch)
 )(MainScreen);

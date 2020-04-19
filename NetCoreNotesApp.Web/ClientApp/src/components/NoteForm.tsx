@@ -1,18 +1,26 @@
 import React, { SyntheticEvent, useState, useEffect } from "react";
-import { Button, TextField, DropdownButton } from "./controls";
+import { Button, TextField, DropdownButton, DropdownField } from "./controls";
 import "./NoteForm.scss";
 import { NoteService, TagService } from "../services";
 import { INote, ITag } from "../entities";
 import "open-iconic/font/css/open-iconic-bootstrap.css";
-import { severityClasses } from "../common/Consts";
+import { severityClasses, severityDefaultValue } from "../common/Consts";
 import AsyncCreatableSelect from "react-select/async-creatable";
 
-import { Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
+import {
+  Modal,
+  ModalHeader,
+  ModalBody,
+  Form,
+  FormGroup,
+  ModalFooter,
+} from "reactstrap";
 
 import { INoteFormProps } from "../types/ComponentsPropsTypes";
 import { IFormData } from "../types/ComponentsStateTypes";
 import ComponentsHelper from "../helpers/ComponentsHelper";
 import { withRouter } from "react-router";
+import { ActionMeta } from "react-select";
 
 const NoteForm = (props: INoteFormProps) => {
   const [severities, setSeverities] = useState<
@@ -21,9 +29,15 @@ const NoteForm = (props: INoteFormProps) => {
   const [formData, setFormData] = useState<IFormData>({
     id: 0,
     text: "",
-    severity: { key: "2", value: "Normal" },
+    severity: severityDefaultValue,
     tags: [],
   });
+
+  const [isModalOpen, toggleModal] = useState(
+    props.location?.state ? props.location.state["isOpen"] : false
+  );
+
+  const isEditMode = props.location?.state && props.location?.state["note"];
 
   useEffect(() => {
     let controller = new AbortController();
@@ -40,7 +54,7 @@ const NoteForm = (props: INoteFormProps) => {
     };
 
     fetchSeverities().then(() => {
-      if (props.location?.state && props.location?.state["note"]) {
+      if (isEditMode) {
         let inputNote = props.location?.state["note"] as INote;
 
         setFormData({
@@ -49,8 +63,12 @@ const NoteForm = (props: INoteFormProps) => {
           text: inputNote.text,
           severity: {
             ...formData.severity,
-            key: inputNote.severity ? inputNote.severity.id.toString() : "2",
-            value: inputNote.severity ? inputNote.severity.text : "Normal",
+            key: inputNote.severity
+              ? inputNote.severity.id.toString()
+              : severityDefaultValue.key,
+            value: inputNote.severity
+              ? inputNote.severity.text
+              : severityDefaultValue.value,
           },
           tags: inputNote.tags.map((tag: ITag) => ({
             value: tag.id,
@@ -90,8 +108,8 @@ const NoteForm = (props: INoteFormProps) => {
 
   function onTagSelect(
     newValue: Array<{ label: string; value: number; __isNew__: boolean }>,
-    actionMeta: any
-  ) {
+    actionMeta: ActionMeta
+  ): void {
     setFormData({
       ...formData,
       tags: ComponentsHelper.convertTagsFromState(newValue),
@@ -105,7 +123,7 @@ const NoteForm = (props: INoteFormProps) => {
 
     NoteService.createNote(note)
       .then(() => {
-        window.location.href = "/";
+        window.history.back();
       })
       .catch((error: any) => {
         console.error(error);
@@ -131,18 +149,25 @@ const NoteForm = (props: INoteFormProps) => {
     });
   }
 
-  let isOpen = props.location?.state ? props.location.state["isOpen"] : false;
+  function onFormClosed(): void {
+    window.history.back();
+  }
+
+  const formTitle = (isEditMode ? "Edit" : "Create").concat(" ", "note");
 
   return (
-    <Modal isOpen={isOpen || false}>
-      <ModalHeader>Modal title</ModalHeader>
-      <ModalBody>
-        <div className="form-container">
-          <form
-            onSubmit={(e) => onSubmit(e)}
-            className={severityClasses[formData.severity.value]}
-          >
-            <fieldset>
+    <div className="form-container">
+      <Form onSubmit={(e) => onSubmit(e)}>
+        <Modal
+          isOpen={isModalOpen}
+          onClosed={onFormClosed}
+          contentClassName={severityClasses[formData.severity.value]}
+        >
+          <ModalHeader toggle={() => toggleModal(!isModalOpen)}>
+            {formTitle}
+          </ModalHeader>
+          <ModalBody>
+            <FormGroup>
               <TextField
                 isMulti
                 key={"text"}
@@ -150,34 +175,30 @@ const NoteForm = (props: INoteFormProps) => {
                 onChange={(e) => onChange(e, "text")}
                 value={formData.text}
               />
-              <div className="form-field">
-                <DropdownButton
-                  items={severities}
-                  onSelect={(e) => onSeverityChange(e, "severity")}
-                >
-                  <span className="oi oi-warning">Severity</span>
-                </DropdownButton>
-              </div>
-              <div className="form-field">
-                <AsyncCreatableSelect
-                  isMulti
-                  cacheOptions
-                  defaultOptions
-                  onChange={(newValue: any, actionMeta: any) =>
-                    onTagSelect(newValue, actionMeta)
-                  }
-                  loadOptions={promiseOptions}
-                  value={formData.tags}
-                />
-              </div>
-            </fieldset>
-            <div className="form-field">
+              <DropdownButton
+                items={severities}
+                onSelect={(e) => onSeverityChange(e, "severity")}
+              >
+                <span className="oi oi-warning">Severity</span>
+              </DropdownButton>
+              <DropdownField
+                isAsync
+                onChangeAsync={(newValue: any, actionMeta: any) =>
+                  onTagSelect(newValue, actionMeta)
+                }
+                loadOptions={promiseOptions}
+                value={formData.tags}
+              />
+            </FormGroup>
+          </ModalBody>
+          <ModalFooter>
+            <div className="submit-button">
               <Button type="submit" />
             </div>
-          </form>
-        </div>
-      </ModalBody>
-    </Modal>
+          </ModalFooter>
+        </Modal>
+      </Form>
+    </div>
   );
 };
 

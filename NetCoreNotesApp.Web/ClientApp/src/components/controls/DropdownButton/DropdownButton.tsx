@@ -5,12 +5,13 @@ import {
   DropdownMenu,
   DropdownItem,
 } from "reactstrap";
+import FormField, { FormFieldProps } from "../FormField/FormField";
 
-interface IDropdownButtonProps {
+type IDropdownButtonProps = FormFieldProps & {
   items: Array<any>;
   children?: React.ReactNode;
   onSelect?: (event: any) => void;
-}
+};
 
 const DropdownButton = (props: IDropdownButtonProps) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -38,4 +39,4 @@ const DropdownButton = (props: IDropdownButtonProps) => {
   );
 };
 
-export default DropdownButton;
+export default FormField(DropdownButton);

@@ -1,6 +1,6 @@
-import NoteService from "../services/NoteService";
-import INote from "../entities/INote";
-import { DefaultRootState } from "react-redux";
+import { NoteService } from "../services";
+import { INote } from "../entities";
+import { RequestNotesActionState, INotesState } from "../types/StoreTypes";
 
 const requestNotesType: string = "REQUEST_NOTES";
 const receiveNotesSuccessType: string = "RECEIVE_NOTES_SUCCESS";
@@ -10,31 +10,31 @@ const chooseNoteType: string = "CHOOSE_NOTE";
 export const actionCreators = {
   chooseNote: () => ({ type: chooseNoteType }),
   requestNotes: () => async (dispatch: any, getState: any) => {
-    dispatch({ type: requestNotesType });
+    const requestNotesActionState: RequestNotesActionState = {
+      type: requestNotesType,
+    };
+    dispatch(requestNotesActionState);
 
     try {
       const notes: Array<INote> = await NoteService.getNotes();
+      requestNotesActionState.type = receiveNotesSuccessType;
+      requestNotesActionState.notes = notes;
 
-      dispatch({ type: receiveNotesSuccessType, notes });
+      dispatch(requestNotesActionState);
     } catch (error) {
-      dispatch({ type: receiveNotesErrorType, error });
+      requestNotesActionState.type = receiveNotesErrorType;
+      requestNotesActionState.error = error;
+
+      dispatch(requestNotesActionState);
     }
-  }
-};
-
-type INotesState = DefaultRootState & {
-  isNotesFetching: boolean;
-  notesFetchError: any;
-
-  items: Array<INote>;
-  selectedItem: any;
+  },
 };
 
 const initialState: INotesState = {
   items: [],
   selectedItem: null,
   isNotesFetching: false,
-  notesFetchError: null
+  notesFetchError: null,
 };
 
 export const reducer = (state: INotesState, action: any): INotesState => {
@@ -47,7 +47,7 @@ export const reducer = (state: INotesState, action: any): INotesState => {
         isNotesFetching: true,
         selectedItem: null,
         notesFetchError: null,
-        items: []
+        items: [],
       };
     }
     case receiveNotesSuccessType: {
@@ -56,7 +56,7 @@ export const reducer = (state: INotesState, action: any): INotesState => {
         isNotesFetching: false,
         selectedItem: null,
         notesFetchError: null,
-        items: action.notes
+        items: action.notes,
       };
     }
     case receiveNotesErrorType: {
@@ -65,13 +65,13 @@ export const reducer = (state: INotesState, action: any): INotesState => {
         isNotesFetching: false,
         selectedItem: null,
         notesFetchError: action.error,
-        items: []
+        items: [],
       };
     }
     case chooseNoteType: {
       return {
         ...state,
-        selectedItem: action.selectedItem
+        selectedItem: action.selectedItem,
       };
     }
     default: {

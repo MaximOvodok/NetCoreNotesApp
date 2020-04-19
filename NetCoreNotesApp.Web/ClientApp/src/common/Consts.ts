@@ -4,4 +4,9 @@ const severityClasses: { [key: string]: string } = {
   High: "red",
 };
 
-export { severityClasses };
+const severityDefaultValue: { key: string; value: string } = {
+  key: "2",
+  value: "Normal",
+};
+
+export { severityDefaultValue, severityClasses };
