@@ -25,7 +25,7 @@ const TextField = (props: TextFieldProps) => {
       cols={10}
       className={
         props.className
-          ? "text-field multi" + props.className
+          ? "text-field multi " + props.className
           : "text-field multi"
       }
       placeholder={props.placeholder}

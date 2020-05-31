@@ -4,6 +4,5 @@ namespace NetCoreNotesApp.DAL.Interfaces
 {
     public interface INoteRepository : IRepository<Note>
     {
-
     }
 }

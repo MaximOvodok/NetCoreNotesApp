@@ -1,6 +1,6 @@
 import { NoteService } from "../services";
 import { INote } from "../entities";
-import { RequestNotesActionState, INotesState } from "../types/StoreTypes";
+import { NotesState, NotesPayload } from "../types/StoreTypes";
 
 const requestNotesType: string = "REQUEST_NOTES";
 const receiveNotesSuccessType: string = "RECEIVE_NOTES_SUCCESS";
@@ -10,7 +10,7 @@ const chooseNoteType: string = "CHOOSE_NOTE";
 export const actionCreators = {
   chooseNote: () => ({ type: chooseNoteType }),
   requestNotes: () => async (dispatch: any, getState: any) => {
-    const requestNotesActionState: RequestNotesActionState = {
+    const requestNotesActionState: NotesPayload = {
       type: requestNotesType,
     };
     dispatch(requestNotesActionState);
@@ -30,14 +30,14 @@ export const actionCreators = {
   },
 };
 
-const initialState: INotesState = {
+const initialState: NotesState = {
   items: [],
   selectedItem: null,
   isNotesFetching: false,
   notesFetchError: null,
 };
 
-export const reducer = (state: INotesState, action: any): INotesState => {
+export const reducer = (state: NotesState, action: any): NotesState => {
   state = state || initialState;
 
   switch (action.type) {

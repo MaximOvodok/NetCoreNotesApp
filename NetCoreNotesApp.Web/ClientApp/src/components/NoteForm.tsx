@@ -1,37 +1,36 @@
 import React, { SyntheticEvent, useState, useEffect } from "react";
-import { Button, TextField, DropdownButton, DropdownField } from "./controls";
+import { Button } from "./controls";
 import "./NoteForm.scss";
 import { NoteService, TagService } from "../services";
-import { INote, ITag } from "../entities";
+import { ITag, INote } from "../entities";
 import "open-iconic/font/css/open-iconic-bootstrap.css";
 import { severityClasses, severityDefaultValue } from "../common/Consts";
-import AsyncCreatableSelect from "react-select/async-creatable";
 
-import {
-  Modal,
-  ModalHeader,
-  ModalBody,
-  Form,
-  FormGroup,
-  ModalFooter,
-} from "reactstrap";
+import { Modal, ModalHeader, ModalBody, Form, ModalFooter } from "reactstrap";
 
 import { INoteFormProps } from "../types/ComponentsPropsTypes";
 import { IFormData } from "../types/ComponentsStateTypes";
 import ComponentsHelper from "../helpers/ComponentsHelper";
 import { withRouter } from "react-router";
-import { ActionMeta } from "react-select";
+import FormBuilder from "./FormBuilder";
+import TextBoxBuilder from "./TextBoxBuilder";
+import DropdownButtonBuilder from "./DropdownButtonBuilder";
+import DropdownBuilder from "./DropdownBuilder";
+import ValidationRules from "./ValidationRules";
 
 const NoteForm = (props: INoteFormProps) => {
   const [severities, setSeverities] = useState<
     Array<{ key: number; value: string; isActive: boolean }>
   >([]);
-  const [formData, setFormData] = useState<IFormData>({
-    id: 0,
-    text: "",
-    severity: severityDefaultValue,
-    tags: [],
-  });
+  const [formData, setFormData] = useState<IFormData>(props.values);
+  const [validationData, setValidationData] = useState<{
+    [key: string]: string;
+  }>({});
+
+  useEffect(() => {
+    setFormData(props.values);
+    setValidationData(props.errors);
+  }, [props]);
 
   const [isModalOpen, toggleModal] = useState(
     props.location?.state ? props.location.state["isOpen"] : false
@@ -57,8 +56,7 @@ const NoteForm = (props: INoteFormProps) => {
       if (isEditMode) {
         let inputNote = props.location?.state["note"] as INote;
 
-        setFormData({
-          ...formData,
+        props.setNoteValue(null, {
           id: inputNote.id,
           text: inputNote.text,
           severity: {
@@ -70,10 +68,7 @@ const NoteForm = (props: INoteFormProps) => {
               ? inputNote.severity.text
               : severityDefaultValue.value,
           },
-          tags: inputNote.tags.map((tag: ITag) => ({
-            value: tag.id,
-            label: tag.name,
-          })),
+          tags: ComponentsHelper.ConvertTagsToState(inputNote.tags),
         });
       }
     });
@@ -89,35 +84,54 @@ const NoteForm = (props: INoteFormProps) => {
     );
   }, [formData.severity.key]);
 
+  const formComponent = new FormBuilder()
+    .addField(
+      new TextBoxBuilder({
+        isMulti: true,
+        key: "text",
+        placeholder: "Text",
+        onChange: props.setNoteValue,
+        isRequired: true,
+        value: formData.text,
+        errorText: validationData["text"],
+        validationRules: [ValidationRules.required],
+      })
+    )
+    .addField(
+      new DropdownButtonBuilder({
+        key: "severity",
+        items: severities,
+        onSeverityChange: props.setNoteValue,
+      })
+    )
+    .addField(
+      new DropdownBuilder({
+        key: "tags",
+        isAsync: true,
+        onChange: props.setNoteValue,
+        loadOptions: promiseOptions,
+        value: formData.tags,
+      })
+    );
+
   function promiseOptions(inputValue: string): Promise<any> {
     return new Promise<any>((resolve) => {
       if (!inputValue) {
         resolve([]);
       } else {
-        TagService.searchTags(inputValue).then((tags: any) => {
-          resolve(
-            tags.map((t: any) => ({
-              value: t.id,
-              label: t.name,
-            }))
-          );
+        TagService.searchTags(inputValue).then((tags: Array<ITag>) => {
+          resolve(ComponentsHelper.ConvertTagsToState(tags));
         });
       }
     });
   }
 
-  function onTagSelect(
-    newValue: Array<{ label: string; value: number; __isNew__: boolean }>,
-    actionMeta: ActionMeta
-  ): void {
-    setFormData({
-      ...formData,
-      tags: ComponentsHelper.convertTagsFromState(newValue),
-    });
-  }
-
   function onSubmit(event: SyntheticEvent) {
     event.preventDefault();
+
+    let errors = formComponent.validateControls();
+
+    props.validateAction(errors);
 
     let note: INote = ComponentsHelper.ConvertFormStateToNote(formData);
 
@@ -128,25 +142,6 @@ const NoteForm = (props: INoteFormProps) => {
       .catch((error: any) => {
         console.error(error);
       });
-  }
-
-  function onSeverityChange(event: any, key: string) {
-    event.preventDefault();
-
-    setFormData({
-      ...formData,
-      [key]: {
-        key: event.target.id,
-        value: event.target.textContent,
-      },
-    });
-  }
-
-  function onChange(event: any, key: string) {
-    setFormData({
-      ...formData,
-      [key]: event.target.value,
-    });
   }
 
   function onFormClosed(): void {
@@ -166,34 +161,10 @@ const NoteForm = (props: INoteFormProps) => {
           <ModalHeader toggle={() => toggleModal(!isModalOpen)}>
             {formTitle}
           </ModalHeader>
-          <ModalBody>
-            <FormGroup>
-              <TextField
-                isMulti
-                key={"text"}
-                placeholder="Text"
-                onChange={(e) => onChange(e, "text")}
-                value={formData.text}
-              />
-              <DropdownButton
-                items={severities}
-                onSelect={(e) => onSeverityChange(e, "severity")}
-              >
-                <span className="oi oi-warning">Severity</span>
-              </DropdownButton>
-              <DropdownField
-                isAsync
-                onChangeAsync={(newValue: any, actionMeta: any) =>
-                  onTagSelect(newValue, actionMeta)
-                }
-                loadOptions={promiseOptions}
-                value={formData.tags}
-              />
-            </FormGroup>
-          </ModalBody>
+          <ModalBody>{formComponent.buildForm()}</ModalBody>
           <ModalFooter>
             <div className="submit-button">
-              <Button type="submit" />
+              <Button type="submit" onClick={(e) => onSubmit(e)} />
             </div>
           </ModalFooter>
         </Modal>

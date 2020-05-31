@@ -6,8 +6,8 @@ import "./MainScreen.scss";
 
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
-import { actionCreators } from "../../../store/Notes";
-import { RequestNotesActionState } from "../../../types/StoreTypes";
+import { actionCreators as notesActionCreators } from "../../../store/Notes";
+import { NotesContainerState } from "../../../types/StoreTypes";
 
 import { INoteProps } from "../../../types/ComponentsPropsTypes";
 import FormScreen from "../FormScreen/FormScreen";
@@ -44,6 +44,8 @@ class MainScreen extends React.Component<INoteProps, {}> {
 }
 
 export default connect(
-  (state: RequestNotesActionState) => state.notes,
-  (dispatch) => bindActionCreators(actionCreators, dispatch)
+  (state: NotesContainerState) => {
+    return state.notes;
+  },
+  (dispatch) => bindActionCreators(notesActionCreators, dispatch)
 )(MainScreen);

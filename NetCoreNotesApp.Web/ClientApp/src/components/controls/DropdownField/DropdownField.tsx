@@ -28,17 +28,19 @@ const DropdownField = (props: DropdownAsyncFieldProps): JSX.Element => {
       isMulti
       cacheOptions
       defaultOptions
-      onChange={props.onChange}
+      onChange={props.onChangeAsync}
       loadOptions={props.loadOptions}
       value={props.value}
     />
   ) : (
     <select key={props.key} className={className} onChange={props.onChange}>
-      {props.options.map((option: { value: number; label: string }) => (
-        <option key={option.value} value={option.label}>
-          {option.value}
-        </option>
-      ))}
+      {props.options
+        ? props.options.map((option: { value: number; label: string }) => (
+            <option key={option.value} value={option.label}>
+              {option.value}
+            </option>
+          ))
+        : []}
     </select>
   );
 

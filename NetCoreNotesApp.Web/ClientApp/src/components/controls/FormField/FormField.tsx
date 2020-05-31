@@ -20,10 +20,15 @@ const FormField = <P extends FormFieldProps>(
             <div className="field-label-text">{props.labelText}</div>
           </div>
         ) : null}
-        <ComposedComponent {...props} />
+        <ComposedComponent
+          {...props}
+          className={
+            props.errorText ? "form-control is-invalid" : "form-control"
+          }
+        />
         {props.errorText ? (
           <div className="form-field-error">
-            <span className="ms-formvalidation">{props.errorText}</span>
+            <span className="text-danger">{props.errorText}</span>
           </div>
         ) : null}
       </div>

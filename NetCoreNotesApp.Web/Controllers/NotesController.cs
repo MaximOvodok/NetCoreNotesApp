@@ -9,6 +9,7 @@ namespace NetCoreNotesApp.Web.Controllers
     public class NotesController : Controller
     {
         private readonly INoteService _noteService;
+
         public NotesController(INoteService noteService)
         {
             _noteService = noteService;

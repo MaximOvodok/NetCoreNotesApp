@@ -1,7 +1,20 @@
 import { INote } from "../entities";
-import { RouteProps } from "react-router";
+import { RouteComponentProps } from "react-router";
+import { IFormData } from "./ComponentsStateTypes";
 
-export interface INoteFormProps extends RouteProps {}
+export type INoteFormProps = RouteComponentProps & {
+  setNoteValue: (e: any, value: any) => void;
+  values: IFormData;
+  errors: { [key: string]: string };
+  validateAction: (errors: any) => void;
+};
+
+export type NoteFormScreenProps = RouteComponentProps & {
+  setNoteValue: (value: any) => void;
+  values: IFormData;
+  errors: { [key: string]: string };
+  validateNote: (errors: any) => void;
+};
 
 export interface INoteProps {
   isNotesFetching: boolean;

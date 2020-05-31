@@ -1,6 +1,7 @@
 import ISeverity from "../entities/ISeverity";
 import { IFormData } from "../types/ComponentsStateTypes";
 import INote from "../entities/INote";
+import { ITag } from "../entities";
 
 class ComponentsHelper {
   public static ConvertSeveritiesToState(
@@ -56,6 +57,15 @@ class ComponentsHelper {
             label: stateTag.label,
           }
     );
+  }
+
+  public static ConvertTagsToState(
+    tags: Array<ITag>
+  ): Array<{ value: number; label: string }> {
+    return tags.map((tag: ITag) => ({
+      value: tag.id,
+      label: tag.name,
+    }));
   }
 
   public static ConvertFormStateToNote(formData: IFormData): INote {

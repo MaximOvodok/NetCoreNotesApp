@@ -8,9 +8,13 @@ namespace NetCoreNotesApp.DAL.Core
         public NotesContext(DbContextOptions<NotesContext> options) : base(options)
         {
         }
+
         public DbSet<Note> Notes { get; set; }
+
         public DbSet<Tag> Tags { get; set; }
+
         public DbSet<Severity> Severities { get; set; }
+
         public DbSet<NotesTag> NotesTags { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
