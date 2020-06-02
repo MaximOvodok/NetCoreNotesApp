@@ -1,6 +1,13 @@
-public class TagDTO
+using System.Collections.Generic;
+
+namespace NetCoreNotesApp.BLL.BusinessEntities
 {
-    public int Id { get; set; }
-    public string Name { get; set; }
-    public NoteDTO Note { get; set; }
+    public class TagDTO
+    {
+        public int Id { get; set; }
+
+        public string Name { get; set; }
+
+        public ICollection<NoteDTO> Notes { get; set; }
+    }
 }

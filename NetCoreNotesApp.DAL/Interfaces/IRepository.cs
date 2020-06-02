@@ -1,10 +1,19 @@
 using System.Linq;
 
-public interface IRepository<T>
+namespace NetCoreNotesApp.DAL.Interfaces
 {
-    IQueryable<T> GetAll();
-    T GetById(int id);
-    void Create(T entity);
-    void Update(T entity);
-    void Remove(int id);
+    public interface IRepository<T>
+    {
+        IQueryable<T> GetAll();
+
+        T GetById(int id);
+
+        T Create(T entity);
+
+        void Update(T entity);
+
+        void Remove(int id);
+
+        void Remove(T entity);
+    }
 }

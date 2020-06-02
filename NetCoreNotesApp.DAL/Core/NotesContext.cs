@@ -1,12 +1,36 @@
 using Microsoft.EntityFrameworkCore;
+using NetCoreNotesApp.DAL.Entities;
 
-public class NotesContext: DbContext
+namespace NetCoreNotesApp.DAL.Core
 {
-    public NotesContext(DbContextOptions<NotesContext> options): base(options)
+    public class NotesContext : DbContext
     {
-        Database.EnsureCreated();
-    }
+        public NotesContext(DbContextOptions<NotesContext> options) : base(options)
+        {
+        }
 
-    public DbSet<Note> Notes { get; set; }
-    public DbSet<Tag> Tags { get; set; }
+        public DbSet<Note> Notes { get; set; }
+
+        public DbSet<Tag> Tags { get; set; }
+
+        public DbSet<Severity> Severities { get; set; }
+
+        public DbSet<NotesTag> NotesTags { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<NotesTag>()
+            .HasKey(t => new { t.NoteId, t.TagId });
+
+            modelBuilder.Entity<NotesTag>()
+                .HasOne(nt => nt.Note)
+                .WithMany(n => n.NotesTags)
+                .HasForeignKey(nt => nt.NoteId);
+
+            modelBuilder.Entity<NotesTag>()
+                .HasOne(nt => nt.Tag)
+                .WithMany(t => t.NotesTags)
+                .HasForeignKey(nt => nt.TagId);
+        }
+    }
 }

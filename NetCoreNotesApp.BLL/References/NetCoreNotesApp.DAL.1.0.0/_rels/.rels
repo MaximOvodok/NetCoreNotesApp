@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
-<Relationship Type="http://schemas.microsoft.com/packaging/2010/07/manifest" Target="/NetCoreNotesApp.DAL.nuspec" Id="R749326b512aa4897" />
-<Relationship Type="http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties" Target="/package/services/metadata/core-properties/533569a71265d6a174a60307f41781be.psmdcp" Id="R4dc2fa91f30d4c0b" />
-</Relationships>

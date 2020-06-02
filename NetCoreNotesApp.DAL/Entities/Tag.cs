@@ -1,5 +1,16 @@
-public class Tag: BaseEntity
+using System.Collections.Generic;
+
+namespace NetCoreNotesApp.DAL.Entities
 {
-    public string Name { get; set; }
-    public Note Note { get; set; }
+    public class Tag : BaseEntity
+    {
+        public string Name { get; set; }
+
+        public IList<NotesTag> NotesTags { get; set; }
+
+        public Tag()
+        {
+            NotesTags = new List<NotesTag>();
+        }
+    }
 }

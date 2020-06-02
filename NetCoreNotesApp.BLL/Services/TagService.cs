@@ -1,27 +1,67 @@
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
+using NetCoreNotesApp.BLL.BusinessEntities;
+using NetCoreNotesApp.BLL.Core;
+using NetCoreNotesApp.DAL.Core;
+using NetCoreNotesApp.DAL.Entities;
+using System.Collections.Generic;
+using System.Linq;
 
-public class TagService : ITagService
+namespace NetCoreNotesApp.BLL.Services
 {
-    private readonly ITagRepository _tagRepository;
-    public TagService(ITagRepository tagRepository)
+    public class TagService : ITagService
     {
-        _tagRepository = tagRepository;
-    }
-    public void EnsureTag(TagDTO tag)
-    {
-        Mapper.Initialize(cfg =>
-        {
-            cfg.CreateMap<TagDTO, Tag>();
-        });
-        var tagEntity = Mapper.Map<TagDTO, Tag>(tag);
+        private readonly IRepositoryContext _context;
 
-        if (tagEntity.Id > 0)
+        private readonly IMapper _mapper;
+
+        public TagService(IRepositoryContext context, IMapper mapper)
         {
-            _tagRepository.Update(tagEntity);
+            _context = context;
+            _mapper = mapper;
         }
-        else
+
+        public IQueryable<TagDTO> SearchTags(string term)
         {
-            _tagRepository.Create(tagEntity);
+            var query = _context.Tags.GetAll();
+
+            query = !string.IsNullOrEmpty(term)
+                ? query.Where(t => t.Name.StartsWith(term))
+                : query.Take(10);
+
+            return query.ProjectTo<TagDTO>(_mapper.ConfigurationProvider);
+        }
+
+        public ICollection<Tag> CreateTags(ICollection<TagDTO> tagDTOs)
+        {
+            var tags = new List<Tag>();
+
+            foreach (var tagDTO in tagDTOs)
+            {
+                var tag = _mapper.Map<TagDTO, Tag>(tagDTO);
+
+                if (tag.Id == 0)
+                {
+                    _context.Tags.Create(tag);
+                }
+
+                tags.Add(tag);
+            }
+
+            _context.Commit();
+
+            return tags;
+        }
+
+        public void RemoveUnusedTag(int id)
+        {
+            var isTagUsed = _context.NotesTags.GetAll().Any(nt => nt.TagId == id);
+
+            if (!isTagUsed)
+            {
+                _context.Tags.Remove(id);
+                _context.Commit();
+            }
         }
     }
 }

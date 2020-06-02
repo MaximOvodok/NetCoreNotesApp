@@ -1,15 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using NetCoreNotesApp.BLL.Core;
+using NetCoreNotesApp.BLL.Services;
+using NetCoreNotesApp.DAL.Core;
+using NetCoreNotesApp.DAL.Interfaces;
+using NetCoreNotesApp.DAL.Repositories;
+using Newtonsoft.Json;
+using System.IO;
 
 namespace NetCoreNotesApp.Web
 {
@@ -25,20 +30,29 @@ namespace NetCoreNotesApp.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<CookiePolicyOptions>(options =>
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2).AddJsonOptions(options => {
+                options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+            }); ;
+
+            // In production, the React files will be served from this directory
+            services.AddSpaStaticFiles(configuration =>
             {
-                // This lambda determines whether user consent for non-essential cookies is needed for a given request.
-                options.CheckConsentNeeded = context => true;
-                options.MinimumSameSitePolicy = SameSiteMode.None;
+                configuration.RootPath = "ClientApp/build";
             });
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-
-            services.AddTransient<DbContext, NotesContext>();
-            services.AddDbContext<NotesContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
-            services.AddTransient<INoteRepository, NoteRepository>();
-            services.AddTransient<ITagRepository, TagRepository>();
-            services.AddTransient<INoteService, NoteService>();
+            services
+                .AddScoped<DbContext, NotesContext>()
+                .AddDbContext<NotesContext>(options => options.UseSqlServer(GetConnectionString("DefaultConnection")))
+                .AddTransient<INoteRepository, NoteRepository>()
+                .AddTransient<ISeverityRepository, SeverityRepository>()
+                .AddTransient<ITagRepository, TagRepository>()
+                .AddTransient<INotesTagRepository, NotesTagRepository>()
+                .AddTransient<IRepositoryContext, RepositoryContext>()
+                .AddTransient<INoteService, NoteService>()
+                .AddTransient<INoteTagService, NoteTagService>()
+                .AddTransient<ITagService, TagService>()
+                .AddAutoMapper(typeof(Startup));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -50,21 +64,42 @@ namespace NetCoreNotesApp.Web
             }
             else
             {
-                app.UseExceptionHandler("/Home/Error");
+                app.UseExceptionHandler("/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-            app.UseCookiePolicy();
+            app.UseSpaStaticFiles();
 
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                    template: "{controller}/{action=Index}/{id?}");
             });
+
+            app.UseSpa(spa =>
+            {
+                spa.Options.SourcePath = "ClientApp";
+
+                if (env.IsDevelopment())
+                {
+                    spa.UseReactDevelopmentServer(npmScript: "start");
+                }
+            });
+
+            using (var scope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            {
+                scope.ServiceProvider.GetService<NotesContext>().Database.Migrate();
+            }
+        }
+
+        private string GetConnectionString(string key)
+        {
+            var path = Path.Combine(Directory.GetCurrentDirectory(), "App_Data");
+            return Configuration.GetConnectionString(key).Replace("|DataDirectory|", path);
         }
     }
 }

@@ -1,8 +1,13 @@
 using Microsoft.EntityFrameworkCore;
+using NetCoreNotesApp.DAL.Entities;
+using NetCoreNotesApp.DAL.Interfaces;
 
-public class TagRepository : BaseRepository<Tag>, ITagRepository
+namespace NetCoreNotesApp.DAL.Repositories
 {
-    public TagRepository(DbContext dbContext) : base(dbContext)
+    public class TagRepository : BaseRepository<Tag>, ITagRepository
     {
+        public TagRepository(DbContext dbContext) : base(dbContext)
+        {
+        }
     }
 }

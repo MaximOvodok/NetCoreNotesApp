@@ -1,0 +1,20 @@
+.form-group {
+  border: 1px solid white;
+  max-width: 720px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.form-field {
+  .oi-warning::before {
+    margin-right: 5px;
+  }
+}
+
+.submit-button {
+  margin: 0;
+
+  input {
+    margin: 0;
+  }
+}

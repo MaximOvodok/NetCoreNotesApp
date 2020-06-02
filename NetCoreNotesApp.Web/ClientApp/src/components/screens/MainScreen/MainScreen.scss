@@ -1,0 +1,84 @@
+.add-note-button-container {
+  overflow: auto;
+}
+
+.add-note-button {
+  float: right;
+  width: 105px;
+  padding: 0;
+  a {
+    text-decoration: none;
+    color: #f7f7f7;
+    padding: 10px;
+    display: block;
+  }
+}
+
+.notes-list {
+  overflow: hidden;
+  padding: 3em;
+  list-style: none;
+}
+
+.note-list-item {
+  padding: 1em;
+  float: left;
+}
+
+.note-tags-list {
+  list-style: none;
+  padding: 0;
+}
+
+.note-tags-list-item {
+  float: left;
+  background: gainsboro;
+  margin: 0.1em;
+}
+
+.note {
+  text-decoration: none;
+  color: #000;
+  display: block;
+  height: 10em;
+  width: 10em;
+  padding: 1em;
+  -moz-box-shadow: 5px 5px 7px rgba(33, 33, 33, 1);
+  -webkit-box-shadow: 5px 5px 7px rgba(33, 33, 33, 0.7);
+  box-shadow: 5px 5px 7px rgba(33, 33, 33, 0.7);
+  -moz-transition: -moz-transform 0.15s linear;
+  -o-transition: -o-transform 0.15s linear;
+  -webkit-transition: -webkit-transform 0.15s linear;
+  -webkit-transform: rotate(-6deg);
+  -o-transform: rotate(-6deg);
+  -moz-transform: rotate(-6deg);
+}
+
+.note:hover,
+.note:focus {
+  box-shadow: 10px 10px 7px rgba(0, 0, 0, 0.7);
+  -moz-box-shadow: 10px 10px 7px rgba(0, 0, 0, 0.7);
+  -webkit-box-shadow: 10px 10px 7px rgba(0, 0, 0, 0.7);
+  -webkit-transform: scale(1.25);
+  -moz-transform: scale(1.25);
+  -o-transform: scale(1.25);
+  position: relative;
+  z-index: 5;
+}
+
+.note p {
+  font-family: "Reenie Beanie", arial, sans-serif;
+  font-size: 180%;
+}
+
+.green {
+  background-color: rgb(227, 255, 204) !important;
+}
+
+.yellow {
+  background-color: #ffc !important;
+}
+
+.red {
+  background-color: rgb(255, 204, 204) !important;
+}
